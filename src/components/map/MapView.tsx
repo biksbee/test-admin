@@ -24,26 +24,26 @@ export const MapView:FC<Icord> = (props) => {
 
 
     return (
-            <YMaps>
-                <Typography
-                    variant="h5"
-                    component="h2"
-                    style={{
-                        paddingBottom: 15
-                    }}
+        <YMaps>
+            <Typography
+                variant="h5"
+                component="h2"
+                style={{
+                    paddingBottom: 15
+                }}
 
-                >
-                    {"Address"}
-                </Typography>
-                {coords}
-                <Map
-                    onClick={onMapClick}
-                    width={`${!isSmall ? '55vw' : '90%'}`}
-                    height={!isSmall ? 320 : 400}
-                    defaultState={{center: coords, zoom: 9}}
-                >
-                    {coords && <Placemark geometry={coords} />}
-                </Map>
-            </YMaps>
+            >
+                {"Address"}
+            </Typography>
+            {coords}
+            <Map
+                onClick={onMapClick}
+                width={`${!isSmall ? '55vw' : '90%'}`}
+                height={!isSmall ? 320 : 400}
+                defaultState={{center: coords, zoom: 9}}
+            >
+                {coords && <Placemark geometry={coords} />}
+            </Map>
+        </YMaps>
     )
 };

@@ -2,7 +2,6 @@ import {useGetIdentity,  EditButton } from "react-admin";
 import { Card, Typography, CardContent, CardHeader, CardMedia, useMediaQuery, Theme} from '@mui/material';
 
 import { MapView } from "../map/MapView";
-import EditIcon from '@mui/icons-material/Edit';
 
 
 const customStyles = {
@@ -12,7 +11,6 @@ const customStyles = {
 
 export const Profile = () => {
 
-    const isSmall = useMediaQuery<Theme>((theme) => theme.breakpoints.down("xl"));
     const { data: identity, isLoading: identityLoading } = useGetIdentity();
 
     if (identityLoading) {

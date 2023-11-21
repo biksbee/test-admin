@@ -2,20 +2,10 @@ import { FC, useState, useEffect } from 'react'
 import { Edit, ImageInput, SimpleForm, TextInput, useRecordContext, useDataProvider} from 'react-admin';
 import {YMaps, Map, Placemark} from "@pbe/react-yandex-maps";
 import { Typography } from "@mui/material";
+import { useFormContext } from "react-hook-form";
 
 
-export const UserEdit = (props: any) => {
-
-    const [loc, setLoc] = useState<number[]>()
-    const dataProvider = useDataProvider();
-
-
-    const clickFunc = (q: number[]) => {
-        setLoc(q)
-        dataProvider.getOne('users', { id: props.id }).then((response) => {
-            setLoc(response.data.address);
-        });
-    }
+export const UserEdit = () => {
 
     return(
         <Edit resource={'users'}>
@@ -28,16 +18,8 @@ export const UserEdit = (props: any) => {
                 <TextInput source="age" />
                 <TextInput source="sex" />
                 <ImageInput source="avatar" />
-                <TextInput
-                    source="address"
-                    label="Address"
-                    value={loc}
-                    onChange={(event) => setLoc(event.target.value)}
-                />
-                Address: {loc}
                 <MapView
                     source="address"
-                    clickFunc={clickFunc}
                 />
             </SimpleForm>
         </Edit>
@@ -45,21 +27,20 @@ export const UserEdit = (props: any) => {
 }
 
 interface Icord {
-    source: string | number[];
-    clickFunc: (value: number[]) => void;
+    source: string;
 }
-
+  
 const MapView:FC<Icord> = (props) => {
 
     const record = useRecordContext();
-
+    const { setValue } = useFormContext();
     const [coords, setCoords] = useState(record !== undefined ? record.address : props.source);
 
     const onMapClick = (e: any) => {
-        setCoords(e.get('coords'));
-        props.clickFunc(e.get('coords'));
+        const currentCoords = e.get('coords');
+        setCoords(currentCoords);
+        setValue(props.source, currentCoords, { shouldDirty: true });
     }
-
 
     return (
         <YMaps>
