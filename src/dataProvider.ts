@@ -8,6 +8,7 @@ export const dataProvider: DataProvider = {
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const { id } = JSON.parse(localStorage.getItem('token') ?? '')
+        console.log(id)
         const query = {
             id: JSON.stringify(id),
             sort: JSON.stringify([field, order]),
@@ -15,11 +16,10 @@ export const dataProvider: DataProvider = {
             filter: JSON.stringify(params.filter),
         };
         const url = `http://localhost:3000/${resource}/all?${stringify(query)}`;
-        const { json, headers } = await httpClient(url);
-        console.log(json)
+        const { json } = await httpClient(url);
         return {
-            data: json,
-            total: parseInt(headers.get('content-range').split('/').pop(), 10),
+            data: json.data,
+            total: json.total,
         };
     },
     getOne: async (resource, params) => {
@@ -28,7 +28,7 @@ export const dataProvider: DataProvider = {
         return { data: json };
     },
     update: async (resource, params) => {
-        const previousData = JSON.parse(localStorage.getItem('token') ?? '');
+
         const request = new Request(`http://localhost:3000/${resource}/${params.id}`, {
             method: 'PATCH',
             body: JSON.stringify({ params }),
@@ -44,9 +44,7 @@ export const dataProvider: DataProvider = {
             .then(authInfo => {
                 localStorage.setItem('token', JSON.stringify(authInfo));
                 return Promise.resolve({
-                    id: params.id,
                     data: authInfo,
-                    previousData
                 });
             })
     },

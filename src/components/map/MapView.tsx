@@ -16,12 +16,6 @@ export const MapView:FC<Icord> = (props) => {
 
     const [coords, setCoords] = useState(record !== undefined ? record.address : props.source);
 
-    // const onMapClick = (e: any) => {
-    //     setCoords(e.get('coords'));
-    //     props.setLocationState(coords)
-    // }
-
-
 
     return (
         <YMaps>
@@ -35,9 +29,7 @@ export const MapView:FC<Icord> = (props) => {
             >
                 {"Address"}
             </Typography>
-            {coords}
             <Map
-                // onClick={onMapClick}
                 width={`${!isSmall ? '55vw' : '90%'}`}
                 height={!isSmall ? 320 : 400}
                 defaultState={{center: coords, zoom: 9}}

@@ -12,7 +12,6 @@ export const UserEdit = () => {
             <SimpleForm>
                 <TextInput source="id" InputProps={{ disabled: true }}/>
                 <TextInput source="name"/>
-                <TextInput source="surname" />
                 <TextInput source="username" />
                 <TextInput source="email" />
                 <TextInput source="age" />
