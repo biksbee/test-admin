@@ -73,9 +73,6 @@ export const Profile = () => {
                                 Name: {identity.name}
                             </Typography>
                             <Typography variant="h5" component="h2">
-                                Surname: {identity.surname}
-                            </Typography>
-                            <Typography variant="h5" component="h2">
                                 NickName: {identity.username}
                             </Typography>
                             <Typography variant="h5" component="h2">

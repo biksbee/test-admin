@@ -9,7 +9,6 @@ export const UserShow = () => {
                 <ImageField source={"avatar"} />
                 <TextField source={"id"} />
                 <TextField source={"name"} />
-                <TextField source={"surname"} />
                 <TextField source={"username"} />
                 <EmailField source={"email"} />
                 <TextField source="age" />

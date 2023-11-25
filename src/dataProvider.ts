@@ -1,79 +1,60 @@
-// import jsonServerProvider from "ra-data-json-server";
-
-// export const dataProvider = jsonServerProvider(
-//   import.meta.env.VITE_JSON_SERVER_URL
-// );
-
 import { DataProvider, fetchUtils } from "react-admin";
 import { stringify } from "query-string";
-import orderBy from 'lodash/orderBy'
 
-import data from './mock.json'
-
-// const apiUrl = 'http://localhost:4444/';
-// const httpClient = fetchUtils.fetchJson;
+const httpClient = fetchUtils.fetchJson;
 
 export const dataProvider: DataProvider = {
-    getList: (resource, params) => {
+    getList: async (resource, params) => {
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
-
-        const start = (page - 1) * perPage;
-        const end = page * perPage;
-        const filteredData = data[resource].slice(start, end);
-
-        const sortedData = orderBy(filteredData, [field], [order === 'ASC' ? 'asc' : 'desc']);
-
-        return Promise.resolve({
-            data: sortedData,
-            total: data[resource].length,
+        const { id } = JSON.parse(localStorage.getItem('token') ?? '')
+        const query = {
+            id: JSON.stringify(id),
+            sort: JSON.stringify([field, order]),
+            range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
+            filter: JSON.stringify(params.filter),
+        };
+        const url = `http://localhost:3000/${resource}/all?${stringify(query)}`;
+        const { json, headers } = await httpClient(url);
+        console.log(json)
+        return {
+            data: json,
+            total: parseInt(headers.get('content-range').split('/').pop(), 10),
+        };
+    },
+    getOne: async (resource, params) => {
+        const url = `http://localhost:3000/${resource}/${params.id}`
+        const { json } = await httpClient(url);
+        return { data: json };
+    },
+    update: async (resource, params) => {
+        const previousData = JSON.parse(localStorage.getItem('token') ?? '');
+        const request = new Request(`http://localhost:3000/${resource}/${params.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ params }),
+            headers: new Headers({ 'Content-Type': 'application/json' }),
         });
+        return fetch(request)
+            .then(response => {
+                if (response.status < 200 || response.status >= 300) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(authInfo => {
+                localStorage.setItem('token', JSON.stringify(authInfo));
+                return Promise.resolve({
+                    id: params.id,
+                    data: authInfo,
+                    previousData
+                });
+            })
     },
-    getOne: (resource, params) => {
-        return Promise.resolve({
-            data: data[resource][+params.id-1],
-        })
+    delete: async (resource, params) => {
+        const url = `http://localhost:3000/${resource}/${params.id}`;
+        const { json } = await httpClient(url, {
+            method: 'DELETE',
+        });
+        return { data: json };
     },
-    update: (resource, params) => {
-        console.log(params)
-        const previousData = data[resource][+params.id-1]
-        data[resource][+params.id-1] = params
-        return Promise.resolve({
-            id: params.id,
-            data: data[resource][+params.id-1],
-            previousData
-        })
-    },
-        // httpClient(`${apiUrl}/${resource}/${params.id}`, {
-        //     method: 'PUT',
-        //     body: JSON.stringify(params.data),
-        // }).then(({ json }) => ({ data: json })),
-
-    // create: (resource, params) =>
-    //     httpClient(`${apiUrl}/${resource}`, {
-    //         method: 'POST',
-    //         body: JSON.stringify(params.data),
-    //     }).then(({ json }) => ({
-    //         data: { ...params.data, id: json.id },
-    //     })),
-    //
-    delete: (resource, params) => {
-        const previousData = data[resource][+params.id-1]
-        return Promise.resolve({
-            id: params.id,
-            previousData
-        })
-    }
-        // httpClient(`${apiUrl}/${resource}/${params.id}`, {
-        //     method: 'DELETE',
-        // }).then(({ json }) => ({ data: json })),
-
-    // deleteMany: (resource, params) => {
-    //     const query = {
-    //         filter: JSON.stringify({ id: params.ids}),
-    //     };
-    //     return httpClient(`${apiUrl}/${resource}?${stringify(query)}`, {
-    //         method: 'DELETE',
-    //     }).then(({ json }) => ({ data: json }));
-    // }
 };

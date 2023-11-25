@@ -1,11 +1,23 @@
 import { AuthProvider } from "react-admin";
-import data from './mock.json'
 
 export const authProvider: AuthProvider  = {
     login: ({ username, password }) => {
-        const user = data.users.find(item => item.username === username && item.password === password)
-        localStorage.setItem('token', JSON.stringify(user))
-        return Promise.resolve();
+        const request = new Request('http://localhost:3000/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ username, password }),
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+        });
+        return fetch(request)
+            .then(response => {
+                if (response.status < 200 || response.status >= 300) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(authInfo => {
+                localStorage.setItem('token', JSON.stringify(authInfo));
+                return Promise.resolve();
+            });
     },
     logout: () => {
         localStorage.removeItem(("token"));
@@ -24,8 +36,21 @@ export const authProvider: AuthProvider  = {
         : Promise.reject();
     },
     getPermissions: () => Promise.resolve(),
-    getIdentity: () => {
-        const user = JSON.parse(localStorage.getItem('token') ?? '');
-        return Promise.resolve(user);
+    getIdentity: async () => {
+        const id = JSON.parse(localStorage.getItem('token') ?? '');
+        const request = new Request(`http://localhost:3000/users/${id.id}`, {
+            method: 'GET',
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+        });
+        return fetch(request)
+            .then(response => {
+                if (response.status < 200 || response.status >= 300) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(authInfo => {
+                return Promise.resolve(authInfo);
+            });
     }
 }
