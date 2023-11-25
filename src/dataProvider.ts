@@ -1,5 +1,6 @@
 import { DataProvider, fetchUtils } from "react-admin";
 import { stringify } from "query-string";
+import {authProvider} from "./authProvider";
 
 const httpClient = fetchUtils.fetchJson;
 
@@ -8,7 +9,6 @@ export const dataProvider: DataProvider = {
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const { id } = JSON.parse(localStorage.getItem('token') ?? '')
-        console.log(id)
         const query = {
             id: JSON.stringify(id),
             sort: JSON.stringify([field, order]),
@@ -28,10 +28,10 @@ export const dataProvider: DataProvider = {
         return { data: json };
     },
     update: async (resource, params) => {
-
-        const request = new Request(`http://localhost:3000/${resource}/${params.id}`, {
+        const { id, data } = params
+        const request = new Request(`http://localhost:3000/${resource}/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify({ params }),
+            body: JSON.stringify(data),
             headers: new Headers({ 'Content-Type': 'application/json' }),
         });
         return fetch(request)
@@ -42,7 +42,7 @@ export const dataProvider: DataProvider = {
                 return response.json();
             })
             .then(authInfo => {
-                localStorage.setItem('token', JSON.stringify(authInfo));
+                authProvider.getIdentity
                 return Promise.resolve({
                     data: authInfo,
                 });

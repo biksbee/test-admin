@@ -1,9 +1,8 @@
-import { FC, useState, useEffect } from 'react'
-import { Edit, ImageInput, SimpleForm, TextInput, useRecordContext, useDataProvider} from 'react-admin';
+import { FC, useState } from 'react'
+import { Edit, ImageInput, SimpleForm, TextInput, useRecordContext } from 'react-admin';
 import {YMaps, Map, Placemark} from "@pbe/react-yandex-maps";
 import { Typography } from "@mui/material";
 import { useFormContext } from "react-hook-form";
-
 
 export const UserEdit = () => {
 
