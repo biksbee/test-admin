@@ -27,6 +27,13 @@ export const dataProvider: DataProvider = {
         const { json } = await httpClient(url);
         return { data: json };
     },
+    create: async (resource, params) => {
+        const { json } = await httpClient(`http://localhost:3000/${resource}`, {
+            method: 'POST',
+            body: JSON.stringify(params.data),
+        })
+        return { data: json };
+    },
     update: async (resource, params) => {
         const { id, data } = params
         const request = new Request(`http://localhost:3000/${resource}/${id}`, {
@@ -47,6 +54,13 @@ export const dataProvider: DataProvider = {
                     data: authInfo,
                 });
             })
+    },
+    updateAvatar: async (resource, data, id) => {
+        const request = new Request(`http://localhost:3000/${resource}/upload?${id}`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+        });
     },
     delete: async (resource, params) => {
         const url = `http://localhost:3000/${resource}/${params.id}`;

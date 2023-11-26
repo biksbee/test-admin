@@ -1,5 +1,6 @@
-import {useGetIdentity,  EditButton } from "react-admin";
-import { Card, Typography, CardContent, CardHeader, CardMedia, useMediaQuery, Theme} from '@mui/material';
+import { useEffect } from "react";
+import {useGetIdentity, EditButton, useRefresh } from "react-admin";
+import { Card, Typography, CardContent, CardHeader, CardMedia } from '@mui/material';
 
 import { MapView } from "../map/MapView";
 
@@ -12,6 +13,12 @@ const customStyles = {
 export const Profile = () => {
 
     const { data: identity, isLoading: identityLoading } = useGetIdentity();
+
+    const refresh = useRefresh();
+
+    useEffect(() => {
+        refresh();
+    }, [refresh]);
 
     if (identityLoading) {
         return <div>Loading...</div>;

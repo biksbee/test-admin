@@ -5,8 +5,6 @@ import { authProvider } from "./authProvider";
 
 import GroupIcon from '@mui/icons-material/Group';
 
-import { MyLayout} from "./components/layout/MyLayout";
-
 import { UsersList } from "./components/listUser/UsersList"
 import { UserShow } from "./components/showUser/UserShow"
 import { UserEdit } from "./components/editUser/UserEdit";
@@ -18,7 +16,6 @@ export const App = () => {
 
     return (
         <Admin
-            layout={MyLayout}
             authProvider={authProvider}
             dataProvider={dataProvider}
             requireAuth
